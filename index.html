@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <button id="btn" @click="myBtnClick(123)">点击</button>
+    <!-- 
+      *在button标签中绑定onclick事件，
+      *要写成test()，不能写成test，
+      *test是指向一个function，
+      *当点击按钮的时候，
+      *test()就告诉浏览器执行test函数，
+      *而test只是告诉了浏览器test函数，并没有要执行
+       // ---------------------------------------
+      *标签内的事件属性的值是由引号包裹的，
+      *代表的是当点击该元素时，执行引号内的代码，直接把引号内的代码拿出来跑，
+      *如果你不加括号，那就不会调用那个函数。
+     -->
+  </div>
+  <script>
+    /* 
+    简单来说就是带括号的是执行一次函数，不带括号的函数就是一个函数对象 
+    */
+
+    const events = {
+      myBtnClick: (...args) => {
+        console.log(args)
+      },
+      target: null
+    }
+    let btn = document.getElementById('btn')
+    btn.addEventListener('click', (e) => {
+      let key = handleClickName(e.target.outerHTML)
+      if (events.target.flag) {
+        events[key].apply(this, [e, events.target.value])
+      } else {
+        events[key](e)
+      }
+    })
+    const handleClickName = (outerHTML) => {
+      let fir = outerHTML.split('>')[0]
+      let result = fir.substring(fir.indexOf('@click') + 7,fir.length).toString().split(/"/)
+      if (result[1].indexOf("(") >= 0) {
+         let target = result[1]
+         let last = target.substring(target.indexOf("(") + 1, target.lastIndexOf(")"))
+         events.target = {
+           flag: true,
+           value: last
+         }
+         return target.substring(0, target.indexOf("("))
+      } else {
+        return result[1]
+      }
+    }
+    // console.log(btn)
+    // btn.onclick = btnClick()
+    /**
+     * btnClick() 表示直接执行，在onclick绑定时就执行了btnClick函数
+     * 所以onclick绑定的东西是test执行后的结果或者返回函数，
+     * 如果想绑定的是某个函数的返回函数(return function{})，就可以用οnclick=btnClick();
+    */
+    // btn.onclick = btnClick
+    /**
+     * btn.onclick 只是给btn一个函数地址，会把btnClick函数绑定在按钮上，当点击的时候就执行
+    */
+  </script>
+</body>
+</html>
